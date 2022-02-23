@@ -1,0 +1,36 @@
+#define F_CPU 16000000ul
+#include <avr/io.h>
+#include <util/delay.h>
+#define baud 9600
+#define num 16ul
+#define baudrate ((F_CPU)/(baud*num)-1)  
+
+
+void usart_initialization() {
+	
+	UBRR0H = (baudrate >> 8);
+	UBRR0L = baudrate;
+	UCSR0B |= (1 << TXEN0);
+	UCSR0C |= (1 << UCSZ00) | (1 << UCSZ01);
+	UCSR0C &= ~(1 << USBS0);
+}
+
+void data_transfer (char mar_data[]) {
+	unsigned char m;
+	for (m=0; m<11; ++m){
+		while (! (UCSR0A & (1 << UDRE0)));
+		UDR0 = mar_data[m];
+	}
+	_delay_ms(500);
+}
+
+int main(void)
+{
+	char mar_data [] = "823359011\r\n";
+	
+	while (1)
+	{
+		usart_initialization();
+		data_transfer (mar_data);
+	}
+}
