@@ -1,0 +1,153 @@
+#define F_CPU 16000000UL
+#include <avr/io.h>
+#include <util/delay.h>
+#include <string.h>
+
+
+void dot(){
+	PORTB |= (1<<PORTB5);
+	_delay_ms(200);
+	PORTB &= ~(1<<PORTB5);
+	_delay_ms(200);
+}
+
+void dash(){
+	PORTB |= (1<<PORTB5);
+	_delay_ms(600);
+	PORTB &= ~(1<<PORTB5);
+	_delay_ms(200);
+
+}
+
+void large_space(){
+	_delay_ms(800);
+}
+
+void small_space(){
+	_delay_ms(400);
+}
+
+
+int main(void)
+{
+	char myString[] = "Mariam Gigauri 823359011";
+	int i=0;
+	while(1){
+		DDRB |= (1<<5);
+
+		while(i<=sizeof(myString)){
+
+			small_space();
+			
+			if (myString[i] == 'a' || myString[i] == 'A'){
+				dot(); dash();
+			}
+			else if (myString[i] == 'b' || myString[i] == 'B'){
+				dash(); dot(); dash(); dot();
+			}
+			else if (myString[i] == 'c' || myString[i] == 'C'){
+				dash(); dot(); dash(); dot();
+			}
+			else if (myString[i] == 'd' || myString[i] == 'D'){
+				dash(); dot(); dot();
+			}
+			else if (myString[i] == 'e' || myString[i] == 'E'){
+				dot();
+			}
+			else if (myString[i] == 'f' || myString[i] == 'F'){
+				dot(); dot(); dash(); dot();
+			}
+			else if (myString[i] == 'g' || myString[i] == 'G'){
+				dash(); dash(); dot();
+			}
+			else if (myString[i] == 'h' || myString[i] == 'H'){
+				dot(); dot(); dot(); dot();
+			}
+			else if (myString[i] == 'i' || myString[i] == 'I'){
+				dot(); dot();
+			}
+			else if (myString[i] == 'j' || myString[i] == 'J'){
+				dot(); dash(); dash(); dash();
+			}
+			else if (myString[i] == 'k' || myString[i] == 'K'){
+				dash(); dot();  dash();
+			}
+			else if (myString[i] == 'l' || myString[i] == 'L'){
+				dot(); dash(); dot();  dot();
+			}
+			else if (myString[i] == 'm' || myString[i] == 'M'){
+				dash();   dash();
+			}
+			else if (myString[i] == 'n' || myString[i] == 'N'){
+				dash(); dot();
+			}
+			else if (myString[i] == 'o' || myString[i] == 'O'){
+				dash(); dash();  dash();
+			}
+			else if (myString[i] == 'p' || myString[i] == 'P'){
+				dot(); dash(); dash(); dot();
+			}
+			else if (myString[i] == 'q' || myString[i] == 'Q'){
+				dash(); dash(); dot();  dash();
+			}
+			else if (myString[i] == 'r' || myString[i] == 'R'){
+				dot(); dash(); dot();
+			}
+			else if (myString[i] == 's' || myString[i] == 'S'){
+				dot();  dot();  dot();
+			}
+			else if (myString[i] == 't' || myString[i] == 'T'){
+				dash();
+			}
+			else if (myString[i] == 'u' || myString[i] == 'U'){
+				dot(); dot();  dash();
+			}
+			else if (myString[i] == 'v' || myString[i] == 'V'){
+				dot(); dot(); dot(); dash();
+			}
+			else if (myString[i] == 'w' || myString[i] == 'W'){
+				dot();  dash(); dash();
+			}
+			else if (myString[i] == 'x' || myString[i] == 'X'){
+				dash();  dot(); dot();  dash();
+			}
+			else if (myString[i] == 'y' || myString[i] == 'Y'){
+				dash(); dot();  dash(); dash();
+			}
+			else if (myString[i] == 'z' || myString[i] == 'Z'){
+				dash(); dash(); dot();  dot();
+			}
+			else if (myString[i] == '1'){
+				dot();  dash(); dash(); dash(); dash();
+			}
+			else if (myString[i] == '2' ){
+				dot();  dot(); dash(); dash(); dash();
+			}
+			else if (myString[i] == '3' ){
+				dot();  dot(); dot(); dash(); dash();
+			}
+			else if (myString[i] == '4' ){
+				dot();  dot(); dot(); dot(); dash();
+			}
+			else if (myString[i] == '5' ){
+				dot();  dot(); dot(); dot(); dot();
+			}
+			else if (myString[i] == '6' ){
+				dash(); dot(); dot(); dot();  dot();
+			}
+			else if (myString[i] == '7' ){
+				dash(); dash(); dot();  dot(); dot();
+			}
+			else if (myString[i] == '8' ){
+				dash(); dash(); dot();  dot(); dot();
+			}
+			else if (myString[i] == '9' ){
+				dash(); dash(); dot();  dot(); dot();
+			}
+			else if (myString[i] == ' ' ){
+				large_space ();
+			}
+		} 
+	}
+	i=i+1;
+}
