@@ -1,0 +1,80 @@
+#define F_CPU 16000000ul
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <util/delay.h>
+
+volatile short pushedkey=15;
+
+short keypad[4][4]={ {1,2,3,0},{4,5,6,0},{7,8,9,0},{0,0,0,0} };
+
+ISR(PCINT0_vect){
+	if(!(PINB&(1<<PINB)))
+	PORTB ^= (1<<PORTB5);
+	
+}
+
+ISR(TIMER0_COMPA_vect){
+	unsigned char i=4;
+	unsigned char j=0;
+	for (i=4;i<=7;++i)
+	{
+		
+		PORTD |= (1<<4)|(1<<5)|(1<<6)|(1<<7);
+		PORTD &= ~(1<<i);
+		for(j=0;j<=3;++j){
+			if(!(PINB&(1<<j))){
+				pushedkey=keypad[i-4][j];
+			}
+		}
+	}
+}
+int main(void)
+{
+	DDRB |= (1<<DDRB5);
+	DDRB &= ~(1<<DDRB7);
+	PORTB |= (1<<PORTB7);
+	cli();
+	
+	PCICR |= (1<<PCIE0);
+	PCMSK0 |= (1<<PCINT7);
+	sei();
+	
+	DDRD |= (1<<4)|(1<<5)|(1<<6)|(1<<7); //keypad
+	DDRB &= ~(0x0f);
+	PORTB |= 0X0F;
+	
+	TCCR0A |= (1<<WGM01); // TIMER 0 CTC
+	TIMSK0 |= (1<<OCIE0A); // INTERUPT ENABLE
+	OCR0A |= 0X4E; // OCR0A 78
+	TCCR0B |= (1<<CS02)|(1<<CS00); // PRESCALER 1024
+	
+	
+	
+	
+	while (1)
+	{
+		if(pushedkey!=15){
+			timer_name(pushedkey);
+		}
+		
+	}
+}
+
+void timer_name(short pushedkey){
+	TCCR2A |= (1<<WGM21); // TIMER 2 CTC
+	OCR2A |= 0X9C; // OCR2A 156
+	TIMSK2 |= (1<<OCIE2A)|(1<<OCIE2B); // INTERRUPT ENABLE
+	TCCR2B |= (1<<CS22)|(1<<CS21)|(1<<CS20); // PRESCALER 1024
+	double tmp1 = (double)pushedkey;
+	tmp1 = pushedkey *1.56;
+	OCR2B = (unsigned char)tmp1;
+}
+
+ISR(TIMER2_COMPA_vect){
+	if(OCR2B!=0)
+	PORTB |= (1<<PORTB5);
+}
+ISR(TIMER2_COMPB_vect){
+	PORTB &= ~(1<<PORTB5);
+}
+
