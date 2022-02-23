@@ -1,0 +1,95 @@
+#define F_CPU 16000000ul
+#define baud 9600
+#include <avr/io.h>
+#include <util/delay.h>
+
+int m = 0;
+int n = 100;
+int j;
+int k = 0;
+
+void delayfunc() {
+	
+	if (PINB & (1<<7)) {
+		
+		if (m > 0){
+			PORTB |= (1 << PORTB5);
+			m--;
+		}
+		
+		j = 0;
+		
+		while (j<100*m) {
+			_delay_us(1);
+			++j;
+		}
+		PORTB &= ~(1 << 5);
+		
+		j = 0; 
+		
+		while (j<(100*(n-m))) {
+			_delay_us(1);
+			++j;
+		}
+	}
+	if (!(PINB & (1<<7))) { 	
+		if (m < n){
+			PORTB |= (1 << 5);
+			m++;
+		}
+		k = 0;
+		
+		while (k<100*m){
+			_delay_us(1);
+			++k;
+		}
+		PORTB &= ~(1 << 5);
+		k=0;
+		
+		while (k<(100*(n-m))){
+			_delay_us(1);
+			++k;
+		}
+	}
+}
+
+
+
+int main(void)
+{
+	delayfunc();
+	
+	TCCR0A |= (1 << WGM01);
+	OCR0A = 255;
+	DDRB |= (1 << DDRB5);
+	DDRB &= ~(1 << DDRB7);
+	PORTB |= (1 << PORTB7);
+	OCR0B = 0;
+	TCCR0B |= (1 << CS00)| (1 << CS02); 
+	
+	while (1) {
+		
+		if (PINB & (1<<7)) {
+			if (OCR0B > 0){
+				PORTB |= (1 << PORTB5);
+				OCR0B--;};
+			while ((TIFR0 & (1 << 2))==0); //OCF0B = 2
+			TIFR0 |= (1 << 2);
+			PORTB &= ~(1<<5);
+			while ((TIFR0 & (1 << 1))==0); //OCF0A=1
+			TIFR0 |= (1 << 1);
+		}
+		
+		if (!(PINB & (1<<7))) {
+			if (OCR0B < OCR0A)
+			OCR0B++;
+			PORTB |= (1<<PORTB5);
+			while ((TIFR0 & (1 << 2))==0);
+			TIFR0 |= (1 << 2);
+			PORTB &= ~(1<<PORTB5);
+			while ((TIFR0 & (1 << 1))==0);
+			TIFR0 |= (1 << 1);
+		}
+	}
+}
+
